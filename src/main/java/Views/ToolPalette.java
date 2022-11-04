@@ -1,5 +1,8 @@
 package Views;
 
+import Controller.AppController;
+import Interface.IModelListener;
+import Model.InteractionModel;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -12,17 +15,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-public class ToolPalette extends StackPane {
+public class ToolPalette extends StackPane implements IModelListener {
 
+    InteractionModel iModel;
     private ArrayList<Button> buttonList = new ArrayList<>();
     private VBox buttonToolbar = new VBox();
 
 
     public ToolPalette() throws FileNotFoundException {
 
-        CreateArrowButton();
-        CreateCursorButton();
-        CreatePlusButton();
+        CreatePointerButton();
+        CreateMoveButton();
+        CreateLinkButton();
         buttonToolbar.setBackground(new Background(new BackgroundFill(Color.HOTPINK, CornerRadii.EMPTY, Insets.EMPTY)));
         buttonToolbar.setMaxWidth(100);
         buttonToolbar.setSpacing(5);
@@ -40,43 +44,68 @@ public class ToolPalette extends StackPane {
         this.buttonList = buttonList;
     }
 
-    public void CreateArrowButton() throws FileNotFoundException {
+    public void CreatePointerButton() throws FileNotFoundException {
         Button arrow = new Button();
         arrow.setMaxWidth(90);
         arrow.setMaxHeight(90);
-        arrow.setStyle("-fx-background-color: #00fff8");
-        FileInputStream input = new FileInputStream("src/main/java/Views/arrow-img.jpg");
+        arrow.setBackground(new Background(new BackgroundFill(Color.CYAN,new CornerRadii(10),null)));
+        FileInputStream input = new FileInputStream("src/main/java/Views/arrow-img.png");
         ImageView imageView = new ImageView(new Image(input));
         imageView.setFitHeight(80);
         imageView.setFitWidth(80);
         arrow.setGraphic(imageView);
+        this.buttonList.add(arrow);
         this.buttonToolbar.getChildren().addAll(arrow);
     }
 
-    public void CreateCursorButton() throws FileNotFoundException {
-        Button arrow = new Button();
-        arrow.setMaxWidth(90);
-        arrow.setMaxHeight(90);
-
-        arrow.setStyle("-fx-background-color: #00fff8");
+    public void CreateMoveButton() throws FileNotFoundException {
+        Button move = new Button();
+        move.setMaxWidth(90);
+        move.setMaxHeight(90);
+        move.setBackground(new Background(new BackgroundFill(Color.CYAN,new CornerRadii(10),new Insets(5,5,5,5))));
         FileInputStream input = new FileInputStream("src/main/java/Views/arrow-img.jpg");
         ImageView imageView = new ImageView(new Image(input));
         imageView.setFitHeight(80);
         imageView.setFitWidth(80);
-        arrow.setGraphic(imageView);
-        this.buttonToolbar.getChildren().addAll(arrow);
+        move.setGraphic(imageView);
+        this.buttonList.add(move);
+        this.buttonToolbar.getChildren().addAll(move);
     }
 
-    public void CreatePlusButton() throws FileNotFoundException {
-        Button arrow = new Button();
-        arrow.setMaxWidth(90);
-        arrow.setMaxHeight(90);
-        arrow.setStyle("-fx-background-color: #00fff8");
-        FileInputStream input = new FileInputStream("src/main/java/Views/arrow-img.jpg");
+    public void CreateLinkButton() throws FileNotFoundException {
+        Button Link = new Button();
+        Link.setMaxWidth(90);
+        Link.setMaxHeight(90);
+        Link.setBackground(new Background(new BackgroundFill(Color.CYAN,new CornerRadii(10),new Insets(5,5,5,5))));
+        FileInputStream input = new FileInputStream("src/main/java/Views/plus-img.jpg");
         ImageView imageView = new ImageView(new Image(input));
         imageView.setFitHeight(80);
         imageView.setFitWidth(80);
-        arrow.setGraphic(imageView);
-        this.buttonToolbar.getChildren().addAll(arrow);
+        Link.setGraphic(imageView);
+        this.buttonList.add(Link);
+        this.buttonToolbar.getChildren().addAll(Link);
+    }
+
+    public void setInteractionModel(InteractionModel im) {
+        iModel = im;
+    }
+
+    public void setController(AppController controller) {
+        buttonList.forEach(b -> {
+            b.setOnAction(e -> {
+                controller.handleButtonClick(buttonList.indexOf(b));
+            });
+        });
+    }
+
+
+    @Override
+    public void iModelChanged() {
+        buttonList.forEach(b -> {
+            b.setBackground(new Background(new BackgroundFill(Color.CYAN,new CornerRadii(10),new Insets(5,5,5,5))));
+            if (buttonList.get(iModel.getSelectedButtonIndex()).equals(b)){
+                b.setBackground(new Background(new BackgroundFill(Color.CYAN,new CornerRadii(10),null)));
+            }
+        });
     }
 }

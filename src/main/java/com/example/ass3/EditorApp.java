@@ -11,7 +11,7 @@ public class EditorApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         MainUI main = new MainUI();
-        Scene scene = new Scene(main, 700, 700);
+        Scene scene = new Scene(main, 900, 750);
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();

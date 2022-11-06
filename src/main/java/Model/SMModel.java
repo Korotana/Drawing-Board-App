@@ -7,7 +7,8 @@ import java.util.ArrayList;
 public class SMModel {
 
     public ArrayList<SMStateNode> nodes = new ArrayList<>();
-    public ArrayList<SMTransitionLink> Links = new ArrayList<>();
+    public ArrayList<SMTransitionLink> links = new ArrayList<>();
+    public ArrayList<SMTransitionLink> events = new ArrayList<>();
     public double lineX, lineY;
     ArrayList<SMModelListener> subscribers = new ArrayList<>();
 
@@ -34,8 +35,21 @@ public class SMModel {
         return found;
     }
 
+    public ArrayList<SMTransitionLink> whichLink(SMStateNode node) {
+        ArrayList<SMTransitionLink> found = new ArrayList<>();
+        for (SMTransitionLink link : links) {
+            if (node.checkHit(link.startX,link.startY) || node.checkHit(link.endX,link.endY)) {
+                found.add(link);
+            }
+        }
+        return found;
+    }
+
     public void moveBox(SMStateNode node, double dX, double dY) {
         node.move(dX,dY);
+        for (SMTransitionLink link: whichLink(node)) {
+            link.moveLine(dX, dY);
+        }
         notifySubscribers();
     }
 
@@ -54,8 +68,8 @@ public class SMModel {
     }
 
     public void createLink(double dx, double dy){
-        lineX = dx;
-        lineY = dy;
+        SMTransitionLink link = new SMTransitionLink(lineX,lineY,dx,dy);
+        links.add(link);
         notifySubscribers();
     }
 

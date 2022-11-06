@@ -8,9 +8,11 @@ import java.util.ArrayList;
 public class InteractionModel {
 
     SMStateNode selection = null;
+    ArrayList<SMTransitionLink> selectionLink = null;
     int selectedButtonIndex = 0;
     private ArrayList<IModelListener> subscribers = new ArrayList<>();
     ArrayList<SMModelListener> smSubscribers = new ArrayList<>();
+    ArrayList<SMModelListener> smLinkSubscribers = new ArrayList<>();
 
     public InteractionModel() {
     }
@@ -42,6 +44,11 @@ public class InteractionModel {
 
     public void setSelection(SMStateNode node) {
         selection = node;
+        notifySmSubscribers();
+    }
+
+    public void setSelectionLink(ArrayList<SMTransitionLink> links){
+        selectionLink = links;
         notifySmSubscribers();
     }
 

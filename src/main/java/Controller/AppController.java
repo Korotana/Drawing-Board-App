@@ -2,6 +2,7 @@ package Controller;
 
 import Model.InteractionModel;
 import Model.SMModel;
+import Model.SMStateNode;
 import javafx.scene.input.MouseEvent;
 
 public class AppController {
@@ -43,14 +44,23 @@ public class AppController {
                 if (hit) {
                     // side effects:
                     // set selection
+                    System.out.println("in hit");
+//                    iModel.setSelectionLink(smModel.whichLink(smModel.whichBox(normX, normY)));
+                    if (iModel.getSelectedButtonIndex() == 2) {
+                        SMStateNode node = smModel.whichBox(normX,normY);
+                        smModel.lineX = node.left;
+                        smModel.lineY = node.top;
+                        currentState = State.DRAGGING;
+                    }
+                    else {
                     iModel.setSelection(smModel.whichBox(normX, normY));
                     // move to new state
-                    currentState = State.DRAGGING;
+                    currentState = State.DRAGGING;}
                 } else {
                     // side effects
                     // none
                     // move to new state
-                    currentState = State.PREPARE_CREATE;
+                        currentState = State.PREPARE_CREATE;
                 }
             }
         }
@@ -68,11 +78,8 @@ public class AppController {
                 // context: none
                 // side effects:
                 // - move box
-                smModel.moveBox(iModel.getSelection(), dX, dY);}
-                else{
-                    smModel.createLink(dX,dY);
-                }
                 // stay in this state
+                smModel.moveBox(iModel.getSelection(), dX, dY);}
             }
             case PREPARE_CREATE -> {
                 // context: none
@@ -92,16 +99,31 @@ public class AppController {
                 // - set to no selection
 //                iModel.unselect();
                 // move to new state
+                System.out.println("realeas drag");
+                boolean hit = smModel.checkHit(normX, normY);
+                if (hit){
+                    SMStateNode node = smModel.whichBox(normX,normY);
+//                    System.out.println(node.left+""+normX);
+                    smModel.createLink(node.left,node.top);}
+                else {
+                    System.out.println("NO LINK CAN BE FORMED");
+                }
                 currentState = State.READY;
             }
             case PREPARE_CREATE -> {
                 // context: none
                 // side effects
                 // - create box
+//                if (iModel.getSelectedButtonIndex() == 2){
+//                    smModel.createLink(normX,normY);
+//                    currentState = State.READY;
+//                }
+//                else{
                 smModel.createNode(normX,normY);
                 iModel.setSelection(smModel.whichBox(normX, normY));
                 // move to new state
                 currentState = State.READY;
+//                }
             }
         }
     }

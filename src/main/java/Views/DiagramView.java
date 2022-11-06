@@ -6,6 +6,7 @@ import Interface.SMModelListener;
 import Model.InteractionModel;
 import Model.SMModel;
 import Model.SMStateNode;
+import Model.SMTransitionLink;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -19,6 +20,7 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
     GraphicsContext gc;
     Canvas myCanvas;
     double width, height;
+//    double startX, startY;
     SMModel model;
     private InteractionModel iModel;
     double nodeLeft, nodeTop, nodeWidth, nodeHeight;
@@ -47,14 +49,17 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
 
     public void setController(AppController controller) {
         // set up event handling - normalize coordinates
-        myCanvas.setOnMousePressed(e -> controller.handlePressed(e.getX()/width,e.getY()/height,e));
-        myCanvas.setOnMouseDragged(e -> controller.handleDragged(e.getX()/width,e.getY()/height));
-        myCanvas.setOnMouseReleased(e -> controller.handleReleased(e.getX()/width,e.getY()/height,e));
-        state.setOnKeyPressed(e-> {
-            if (e.getCode().equals(KeyCode.ENTER)){
-                controller.handleStateUpdate(state.getText());
-            }
+        myCanvas.setOnMousePressed(e -> {
+            controller.handlePressed(e.getX()/width,e.getY()/height,e);}
+        );
+        myCanvas.setOnMouseDragged(e -> {
+            controller.handleDragged(e.getX()/width,e.getY()/height);}
+        );
+        myCanvas.setOnMouseReleased(e -> {
+            controller.handleReleased(e.getX()/width,e.getY()/height,e);
         });
+        state.setOnKeyPressed(e-> {
+            if (e.getCode().equals(KeyCode.ENTER))controller.handleStateUpdate(state.getText());});
         update.setOnMousePressed(e -> controller.handleUpdatePressed(stateEvent.getText()));
     }
 
@@ -63,16 +68,20 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
     }
 
     public void draw() {
-        if (iModel.getSelectedButtonIndex() == 2){
-            gc.setLineWidth(2.0);
-            gc.moveTo(model.lineX, model.lineY);
-            gc.lineTo(model.lineX, model.lineY);
-            gc.stroke();
-        }
-        else {
+
         gc.clearRect(0, 0, width, height);
         gc.setStroke(Color.BLACK);
         gc.strokeRect(0, 0, width, height);
+        gc.setLineWidth(3.0);
+
+        gc.stroke();
+        for (SMTransitionLink link: model.links) {
+            gc.strokeLine(link.startX * width,link.startY*height,link.left*width,link.top*height);
+            gc.strokeLine(link.left*width,link.top*height,link.endX*width,link.endY*height);
+            gc.strokeRect(link.left*width,link.top*height,link.width*width,link.height*height);
+//            System.out.println(link.startX+ "InView" + link.endX);
+        }
+
         for (SMStateNode node : model.nodes) {
             if (node == iModel.getSelection()) {
                 gc.setFill(Color.TEAL);
@@ -91,7 +100,7 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
             gc.setStroke(Color.BLACK);
             gc.fillText(node.state,node.left * width + 80,node.top * height + 40);
 //            gc.setFill(Color.ORANGE);
-        }}
+        }
     }
 
     @Override

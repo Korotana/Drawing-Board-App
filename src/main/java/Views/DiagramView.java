@@ -73,12 +73,27 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
         gc.setStroke(Color.BLACK);
         gc.strokeRect(0, 0, width, height);
         gc.setLineWidth(3.0);
-
         gc.stroke();
+
         for (SMTransitionLink link: model.links) {
             gc.strokeLine(link.startX * width,link.startY*height,link.left*width,link.top*height);
             gc.strokeLine(link.left*width,link.top*height,link.endX*width,link.endY*height);
-            gc.strokeRect(link.left*width,link.top*height,link.width*width,link.height*height);
+//            if (link.startX > link.left && model.lineX == link.startX){
+//                gc.setStroke(Color.RED);
+//                gc.strokeLine((link.left) * width,(link.top)*height,(link.left*width)+40,(link.top*height)+30);
+//                gc.strokeLine((link.left) * width,(link.top)*height,(link.left*width)+20,(link.top*height)-30);
+//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width)*2)-40,((link.startY*height)*2)-40);
+//            }else {
+//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width)/2)+40,((link.startY*height)/2)+40);
+//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width))/2-40,((link.startY*height)/2)-40);
+//            }
+            gc.setFill(Color.ALICEBLUE);
+            gc.setStroke(Color.YELLOW);
+            gc.strokeRect(link.left*width-80,link.top*height-80,link.width*width,link.height*height);
+            gc.fillRect(link.left*width-80,link.top*height-80,link.width*width,link.height*height);
+
+            fillEventDetails(link);
+
 //            System.out.println(link.startX+ "InView" + link.endX);
         }
 
@@ -101,6 +116,18 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
             gc.fillText(node.state,node.left * width + 80,node.top * height + 40);
 //            gc.setFill(Color.ORANGE);
         }
+    }
+
+    private void fillEventDetails(SMTransitionLink link) {
+        gc.setFill(Color.BLACK);
+        gc.setStroke(Color.BLACK);
+        gc.fillText(link.eventLabel,link.left*width-65,link.top*height-65);
+        gc.fillText(link.contextLabel,link.left*width-65,link.top*height-20);
+        gc.fillText(link.effectsLabel,link.left*width-65,link.top*height+20);
+
+        gc.fillText(link.event,link.left*width-65,link.top*height-55);
+        gc.fillText(link.context,link.left*width-65,link.top*height-10);
+        gc.fillText(link.sideEffects,link.left*width-65,link.top*height+30);
     }
 
     @Override

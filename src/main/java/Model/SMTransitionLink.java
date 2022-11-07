@@ -6,19 +6,19 @@ public class SMTransitionLink {
 
     public double startX, startY, endX, endY;
     public double left, top, width, height;
-    public Label eventLabel, contextLabel, effectsLabel;
-    public String sideEffects, context, event = "No Event";
+    public String eventLabel, contextLabel, effectsLabel;
+    public String sideEffects = "No SideEffects", context = "No Context", event = "No Event";
 
     public SMTransitionLink( double newStartX, double newStartY, double newendX, double newendY) {
-            eventLabel = new Label(event);
-            contextLabel = new Label(context);
-            effectsLabel = new Label(sideEffects);
+            eventLabel = "Event";
+            contextLabel = "Context";
+            effectsLabel = "SideEffects";
             startX = newStartX;
             startY = newStartY;
             endX = newendX;
             endY = newendY;
-        System.out.println("strtx"+newStartX);
-        System.out.println("endx"+newendX);
+//        System.out.println("strtx"+newStartX);
+//        System.out.println("endx"+newendX);
 
         left = (newStartX+newendX)/2;
             top = (newStartY+newendY)/2;
@@ -30,10 +30,18 @@ public class SMTransitionLink {
             return x >= left && x <= left+width && y >= top && y <= top+height;
         }
 
-        public void moveLine(double dX, double dY) {
+        public void moveLineEnd(double dX, double dY) {
+            endX += dX;
+            endY += dY;
 //            if (endY-dY)
         }
+
+    public void moveLineStart(double dX, double dY) {
+            startX += dX;
+            startY += dY;
     }
+
+}
 
 
 

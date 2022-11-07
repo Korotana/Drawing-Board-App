@@ -37,7 +37,7 @@ public class MainUI extends StackPane {
         toolPalette.setController(appController);
         diagramView.setController(appController);
 
-        System.out.println("Man\n\n");
+//        System.out.println("Man\n\n");
         mainBox.getChildren().addAll(toolPalette, diagramView);
         this.getChildren().addAll(mainBox);
 

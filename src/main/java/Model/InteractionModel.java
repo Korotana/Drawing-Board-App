@@ -52,6 +52,10 @@ public class InteractionModel {
         notifySmSubscribers();
     }
 
+    public ArrayList<SMTransitionLink> getSelectionLink() {
+        return selectionLink;
+    }
+
     public SMStateNode getSelection() {
         return this.selection;
     }

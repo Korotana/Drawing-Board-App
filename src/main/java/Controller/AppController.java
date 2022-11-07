@@ -44,19 +44,22 @@ public class AppController {
                 if (hit) {
                     // side effects:
                     // set selection
-                    System.out.println("in hit");
+//                    System.out.println("in hit");
 //                    iModel.setSelectionLink(smModel.whichLink(smModel.whichBox(normX, normY)));
                     if (iModel.getSelectedButtonIndex() == 2) {
                         SMStateNode node = smModel.whichBox(normX,normY);
-                        smModel.lineX = node.left;
-                        smModel.lineY = node.top;
+                        smModel.lineX = normX;
+                        smModel.lineY = normY;
+                        smModel.initialNode = node;
+//                        smModel.createLink(prevX, prevY, normX, normY);
                         currentState = State.DRAGGING;
                     }
                     else {
-                    iModel.setSelection(smModel.whichBox(normX, normY));
+                        iModel.setSelection(smModel.whichBox(normX, normY));
                     // move to new state
-                    currentState = State.DRAGGING;}
-                } else {
+                        currentState = State.DRAGGING;}
+                }
+                else {
                     // side effects
                     // none
                     // move to new state
@@ -69,17 +72,22 @@ public class AppController {
     public void handleDragged(double normX, double normY) {
         double dX = normX - prevX;
         double dY = normY - prevY;
-        prevX = normX;
-        prevY = normY;
+//        prevX = normX;
+//        prevY = normY;
 
         switch (currentState) {
             case DRAGGING -> {
+
                 if (iModel.getSelectedButtonIndex() == 0){
-                // context: none
-                // side effects:
-                // - move box
-                // stay in this state
-                smModel.moveBox(iModel.getSelection(), dX, dY);}
+                    smModel.moveBox(iModel.getSelection(), dX, dY);
+//                    smModel.moveLink(iModel.getSelectionLink(), dX, dY);
+                }
+                else {
+//                    smModel.lineX = prevX;
+//                    smModel.lineY = prevY;
+                    SMStateNode node = smModel.whichBox(normX,normY);
+                    smModel.createLink(prevX, prevY, normX, normY);
+                }
             }
             case PREPARE_CREATE -> {
                 // context: none
@@ -89,6 +97,8 @@ public class AppController {
                 currentState = State.READY;
             }
         }
+        prevX = normX;
+        prevY = normY;
     }
 
     public void handleReleased(double normX, double normY, MouseEvent event) {
@@ -99,12 +109,18 @@ public class AppController {
                 // - set to no selection
 //                iModel.unselect();
                 // move to new state
-                System.out.println("realeas drag");
+//                System.out.println("realeas drag");
                 boolean hit = smModel.checkHit(normX, normY);
                 if (hit){
-                    SMStateNode node = smModel.whichBox(normX,normY);
+//                    SMStateNode node = smModel.whichBox(normX,normY);
 //                    System.out.println(node.left+""+normX);
-                    smModel.createLink(node.left,node.top);}
+//                    smModel.createLink(node.left,node.top);
+                    if (iModel.getSelectedButtonIndex() == 2){
+//                        SMStateNode node = smModel.whichBox(normX,normY);
+                        smModel.createLink(Double.MAX_VALUE, Double.MAX_VALUE,normX,normY);
+                    }
+
+                }
                 else {
                     System.out.println("NO LINK CAN BE FORMED");
                 }
@@ -115,7 +131,7 @@ public class AppController {
                 // side effects
                 // - create box
 //                if (iModel.getSelectedButtonIndex() == 2){
-//                    smModel.createLink(normX,normY);
+//                    smModel.createLink(Double.MAX_VALUE, Double.MAX_VALUE,normX,normY);
 //                    currentState = State.READY;
 //                }
 //                else{

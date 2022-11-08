@@ -27,7 +27,8 @@ public class SMTransitionLink {
         }
 
         public boolean checkHit(double x, double y) {
-            return x >= left && x <= left+width && y >= top && y <= top+height;
+            System.out.println(x+"---"+y+"==="+height+"^^^^"+width);
+            return x >= left-0.1 && x <= left+width-0.1 && y >= top-0.1 && y <= top+height-0.1;
         }
 
         public void moveLineEnd(double dX, double dY) {
@@ -41,6 +42,10 @@ public class SMTransitionLink {
             startY += dY;
     }
 
+    public void move(double dX, double dY) {
+        left += dX;
+        top += dY;
+    }
 }
 
 

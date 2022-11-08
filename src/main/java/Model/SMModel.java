@@ -4,17 +4,18 @@ import Interface.SMModelListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class SMModel {
 
     public ArrayList<SMStateNode> nodes = new ArrayList<>();
     public ArrayList<SMTransitionLink> links = new ArrayList<>();
-//    public ArrayList<SMTransitionLink> templinks = new ArrayList<>();
     public HashMap<SMStateNode, ArrayList<SMTransitionLink>> nodeLinksStart = new HashMap<>();
     public HashMap<SMStateNode, ArrayList<SMTransitionLink>> nodeLinksEnd = new HashMap<>();
+    public HashMap<SMTransitionLink, ArrayList<SMTransitionLink>> eventLinksStart = new HashMap<>();
+    public HashMap<SMTransitionLink, ArrayList<SMTransitionLink>> eventLinksEnd = new HashMap<>();
     public double lineX, lineY;
     public SMStateNode initialNode;
+    public SMTransitionLink initialLink;
     ArrayList<SMModelListener> subscribers = new ArrayList<>();
 
     public SMModel() {}
@@ -30,6 +31,11 @@ public class SMModel {
                 .anyMatch(b -> b.checkHit(x,y));
     }
 
+    public boolean checkEventBoxHit(double x, double y) {
+        return links.stream()
+                .anyMatch(b -> b.checkHit(x,y));
+    }
+
     public SMStateNode whichBox(double x, double y) {
         SMStateNode found = null;
         for (SMStateNode node : nodes) {
@@ -40,34 +46,19 @@ public class SMModel {
         return found;
     }
 
-//    public ArrayList<SMTransitionLink> whichLinkStart(SMStateNode node) {
-//        ArrayList<SMTransitionLink> found = new ArrayList<>();
-//        for (SMTransitionLink link : links) {
-//            if (node.checkHit(link.startX,link.startY)) {
-//                found.add(link);
-//            }
-//        }
-//        return found;
-//    }
-//
-//    public ArrayList<SMTransitionLink> whichLinkEnd(SMStateNode node) {
-//        ArrayList<SMTransitionLink> found = new ArrayList<>();
-//        for (SMTransitionLink link : links) {
-//            if (node.checkHit(link.endX,link.endY)) {
-//                found.add(link);
-//            }
-//        }
-//        return found;
-//    }
+    public SMTransitionLink whichEventBox(double x, double y) {
+        SMTransitionLink found = null;
+        for (SMTransitionLink link : links) {
+            if (link.checkHit(x,y)) {
+                found = link;
+            }
+        }
+        return found;
+    }
 
     public void moveBox(SMStateNode node, double dX, double dY) {
         node.move(dX,dY);
-//        for (SMTransitionLink link: whichLinkStart(node)) {
-//            link.moveLineStart(dX, dY);
-//        }
-//        for (SMTransitionLink link: whichLinkEnd(node)) {
-//            link.moveLineEnd(dX, dY);
-//        }
+
         nodeLinksStart.forEach((startNode,nodelinks) -> {
             if (startNode == node){
                 for (SMTransitionLink nodelink: nodelinks) {
@@ -83,6 +74,25 @@ public class SMModel {
             }
         });
 
+        notifySubscribers();
+    }
+
+    public void moveEventBox(SMTransitionLink link, double dX, double dY) {
+        link.move(dX,dY);
+        eventLinksStart.forEach((startlink,nodelinks) -> {
+            if (startlink == link){
+                for (SMTransitionLink nodelink: nodelinks) {
+                    nodelink.moveLineStart(dX, dY);
+                }
+            }
+        });
+        eventLinksEnd.forEach((endlink,nodelinks) -> {
+            if (endlink == link){
+                for (SMTransitionLink nodelink: nodelinks) {
+                    nodelink.moveLineEnd(dX, dY);
+                }
+            }
+        });
         notifySubscribers();
     }
 
@@ -127,18 +137,17 @@ public class SMModel {
                 templink.add(links.get(linkCount-1));
                 nodeLinksStart.put(initialNode,templink);
             }
-
-
-//            if (nodeLinksStart.containsKey(initialNode)) {List<SMTransitionLink> templink = nodeLinksStart.get(initialNode);};
-//            else nodeLinksStart.put(initialNode, links.subList(linkCount,linkCount));
-//            if (nodeLinksEnd.containsKey(node)) nodeLinksEnd.get(node).add(link);
-//            else nodeLinksEnd.put(node, links.subList(linkCount,linkCount));
-//            nodeLinksStart.put(initialNode,links);
         }else {
             if (links.size() >= linkCount){
                 links.remove(link);
             }
         }
+    }
+
+    public void updateLinkEvent(String event, String context, String effects) {
+
+
+
     }
 
 //    public void createDragLink(double prevX, double prevY, double normX, double normY) {

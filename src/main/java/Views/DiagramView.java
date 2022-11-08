@@ -20,7 +20,6 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
     GraphicsContext gc;
     Canvas myCanvas;
     double width, height;
-//    double startX, startY;
     SMModel model;
     private InteractionModel iModel;
     double nodeLeft, nodeTop, nodeWidth, nodeHeight;
@@ -60,7 +59,7 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
         });
         state.setOnKeyPressed(e-> {
             if (e.getCode().equals(KeyCode.ENTER))controller.handleStateUpdate(state.getText());});
-        update.setOnMousePressed(e -> controller.handleUpdatePressed(stateEvent.getText()));
+        update.setOnMousePressed(e -> controller.handleUpdatePressed(stateEvent.getText(), stateContext.getText(), stateSideEffects.getText()));
     }
 
     public void setInteractionModel(InteractionModel newModel) {
@@ -76,19 +75,18 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
         gc.stroke();
 
         for (SMTransitionLink link: model.links) {
+
             gc.strokeLine(link.startX * width,link.startY*height,link.left*width,link.top*height);
             gc.strokeLine(link.left*width,link.top*height,link.endX*width,link.endY*height);
-//            if (link.startX > link.left && model.lineX == link.startX){
-//                gc.setStroke(Color.RED);
-//                gc.strokeLine((link.left) * width,(link.top)*height,(link.left*width)+40,(link.top*height)+30);
-//                gc.strokeLine((link.left) * width,(link.top)*height,(link.left*width)+20,(link.top*height)-30);
-//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width)*2)-40,((link.startY*height)*2)-40);
-//            }else {
-//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width)/2)+40,((link.startY*height)/2)+40);
-//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width))/2-40,((link.startY*height)/2)-40);
-//            }
-            gc.setFill(Color.ALICEBLUE);
-            gc.setStroke(Color.YELLOW);
+
+            if (link == iModel.getSelectionLink()) {
+                gc.setFill(Color.CYAN);
+                gc.setStroke(Color.BLACK);
+            } else {
+                gc.setFill(Color.ALICEBLUE);
+                gc.setStroke(Color.YELLOW);
+            }
+
             gc.strokeRect(link.left*width-80,link.top*height-80,link.width*width,link.height*height);
             gc.fillRect(link.left*width-80,link.top*height-80,link.width*width,link.height*height);
 
@@ -158,3 +156,14 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
 
     }
 }
+
+
+//            if (link.startX > link.left && model.lineX == link.startX){
+//                gc.setStroke(Color.RED);
+//                gc.strokeLine((link.left) * width,(link.top)*height,(link.left*width)+40,(link.top*height)+30);
+//                gc.strokeLine((link.left) * width,(link.top)*height,(link.left*width)+20,(link.top*height)-30);
+//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width)*2)-40,((link.startY*height)*2)-40);
+//            }else {
+//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width)/2)+40,((link.startY*height)/2)+40);
+//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width))/2-40,((link.startY*height)/2)-40);
+//            }

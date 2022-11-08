@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class InteractionModel {
 
     SMStateNode selection = null;
-    ArrayList<SMTransitionLink> selectionLink = null;
+    SMTransitionLink selectionLink = null;
     int selectedButtonIndex = 0;
     private ArrayList<IModelListener> subscribers = new ArrayList<>();
     ArrayList<SMModelListener> smSubscribers = new ArrayList<>();
@@ -47,12 +47,12 @@ public class InteractionModel {
         notifySmSubscribers();
     }
 
-    public void setSelectionLink(ArrayList<SMTransitionLink> links){
-        selectionLink = links;
+    public void setSelectionLink(SMTransitionLink link){
+        selectionLink = link;
         notifySmSubscribers();
     }
 
-    public ArrayList<SMTransitionLink> getSelectionLink() {
+    public SMTransitionLink getSelectionLink() {
         return selectionLink;
     }
 
@@ -63,5 +63,19 @@ public class InteractionModel {
     public void unselect() {
         selection = null;
         notifySmSubscribers();
+    }
+
+    public void deselectNode() {
+        if (selection != null) {
+            selection = null;
+            notifySmSubscribers();
+        }
+    }
+
+    public void deSelectEventBox() {
+        if (selectionLink != null) {
+            selectionLink = null;
+            notifySmSubscribers();
+        }
     }
 }

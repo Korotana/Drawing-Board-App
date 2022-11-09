@@ -26,10 +26,9 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
 
     HBox Box = new HBox();
     VBox stateBox = new VBox();
-    TextField state = new TextField();
-    TextField stateEvent = new TextField();
-    TextField stateSideEffects = new TextField();
-    TextField stateContext = new TextField();
+    NodePropertiesView nodePropertiesView = new NodePropertiesView();
+    LinkPropertiesView linkPropertiesView = new LinkPropertiesView();
+
     Button update = new Button("Update");
 
     public DiagramView(double w, double h) {
@@ -37,10 +36,10 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
         height = h;
         myCanvas = new Canvas(width, height);
         gc = myCanvas.getGraphicsContext2D();
-        stateSideEffects.setPrefHeight(200);
-        stateContext.setPrefHeight(200);
+        linkPropertiesView.stateSideEffects.setPrefHeight(200);
+        linkPropertiesView.stateContext.setPrefHeight(200);
         Label stateLabel = new Label("Event:");
-        stateBox.getChildren().addAll(stateLabel,state);
+        stateBox.getChildren().addAll(stateLabel,nodePropertiesView.state);
         stateBox.setBackground(new Background(new BackgroundFill(Color.DARKGRAY,null,null)));
         Box.getChildren().addAll(myCanvas,stateBox);
         this.getChildren().addAll(Box);
@@ -57,9 +56,9 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
         myCanvas.setOnMouseReleased(e -> {
             controller.handleReleased(e.getX()/width,e.getY()/height,e);
         });
-        state.setOnKeyPressed(e-> {
-            if (e.getCode().equals(KeyCode.ENTER))controller.handleStateUpdate(state.getText());});
-        update.setOnMousePressed(e -> controller.handleUpdatePressed(stateEvent.getText(), stateContext.getText(), stateSideEffects.getText()));
+        nodePropertiesView.state.setOnKeyPressed(e-> {
+            if (e.getCode().equals(KeyCode.ENTER))controller.handleStateUpdate(nodePropertiesView.state.getText());});
+        update.setOnMousePressed(e -> controller.handleUpdatePressed(linkPropertiesView.stateEvent.getText(), linkPropertiesView.stateContext.getText(), linkPropertiesView.stateSideEffects.getText()));
     }
 
     public void setInteractionModel(InteractionModel newModel) {
@@ -130,6 +129,7 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
 
     @Override
     public void modelChanged() {
+//        iModel
         draw();
     }
 
@@ -145,13 +145,9 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
     private void updateToolPalleteChange() {
         stateBox.getChildren().clear();
         if (iModel.getSelectedButtonIndex() == 2){
-            Label eventLabel = new Label("Event:");
-            Label contextLabel = new Label("Context:");
-            Label effectsLabel = new Label("SideEffects:");
-            stateBox.getChildren().addAll(eventLabel,stateEvent,contextLabel,stateSideEffects,effectsLabel,stateContext,update);}
+            stateBox.getChildren().addAll(linkPropertiesView.eventLabel,linkPropertiesView.stateEvent,linkPropertiesView.contextLabel,linkPropertiesView.stateSideEffects,linkPropertiesView.effectsLabel,linkPropertiesView.stateContext,update);}
         else {
-            Label stateLabel = new Label("State:");
-            stateBox.getChildren().addAll(stateLabel,state);
+            stateBox.getChildren().addAll(nodePropertiesView.stateLabel,nodePropertiesView.state);
         }
 
     }

@@ -111,13 +111,17 @@ public class SMModel {
     }
 
     int linkCount = 0;
-    public void createLink(double startX, double startY, double dx, double dy){
+    public SMTransitionLink createLink(double startX, double startY, double dx, double dy){
         SMTransitionLink link = new SMTransitionLink(lineX,lineY, dx, dy);
+        SMStateNode circleBox = whichBox(lineX,lineY);
+        if (circleBox == whichBox(dx,dy)){
+            //Create Circle
+
+        }
         links.add(link);
         notifySubscribers();
         if (startX == Double.MAX_VALUE){
             linkCount+=1;
-            System.out.println(linkCount+ "and"+ links.size());
             SMStateNode node = whichBox(dx,dy);
             if (nodeLinksEnd.containsKey(node)){
                 ArrayList<SMTransitionLink> prevlinks = nodeLinksEnd.get(node);
@@ -142,12 +146,14 @@ public class SMModel {
                 links.remove(link);
             }
         }
+        return link;
     }
 
-    public void updateLinkEvent(String event, String context, String effects) {
-
-
-
+    public void updateLinkEvent(String event, String context, String effects, SMTransitionLink selectionLink) {
+        selectionLink.event = event;
+        selectionLink.context = context;
+        selectionLink.sideEffects = effects;
+        notifySubscribers();
     }
 
 //    public void createDragLink(double prevX, double prevY, double normX, double normY) {

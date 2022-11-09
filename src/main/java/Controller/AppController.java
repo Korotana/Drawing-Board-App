@@ -56,6 +56,7 @@ public class AppController {
                     }
                     else {
                         iModel.setSelection(smModel.whichBox(normX, normY));
+                        iModel.setSelectionLink(null);
 
                     // move to new state
                         currentState = State.DRAGGING;}
@@ -71,7 +72,7 @@ public class AppController {
                     }
                     else {
                         iModel.setSelectionLink(smModel.whichEventBox(normX, normY));
-
+                        iModel.setSelection(null);
                         // move to new state
                         currentState = State.DRAGGING;}
                 }
@@ -131,12 +132,12 @@ public class AppController {
                 // move to new state
                 boolean hit = smModel.checkHit(normX, normY);
                 if (hit){
-
                     if (iModel.getSelectedButtonIndex() == 2){
 //                        SMStateNode node = smModel.whichBox(normX,normY);
-                        smModel.createLink(Double.MAX_VALUE, Double.MAX_VALUE,normX,normY);
+                        SMTransitionLink linkCreated = smModel.createLink(Double.MAX_VALUE, Double.MAX_VALUE,normX,normY);
+                        iModel.setSelection(null);
+                        iModel.setSelectionLink(linkCreated);
                     }
-
                 }
                 else {
                     System.out.println("NO LINK CAN BE FORMED");
@@ -146,10 +147,12 @@ public class AppController {
             case PREPARE_CREATE -> {
 
                 boolean eventBoxHit = smModel.checkEventBoxHit(normX,normY);
-                System.out.println(eventBoxHit);
-                if (eventBoxHit) iModel.setSelectionLink(smModel.whichEventBox(normX,normY));
+                if (eventBoxHit) {iModel.setSelectionLink(smModel.whichEventBox(normX,normY));
+                iModel.setSelection(null);
+                }
                 else {smModel.createNode(normX,normY);
-                iModel.setSelection(smModel.whichBox(normX, normY));}
+                iModel.setSelection(smModel.whichBox(normX, normY));
+                iModel.setSelectionLink(null);}
                 // move to new state
                 currentState = State.READY;
 //                }
@@ -162,9 +165,8 @@ public class AppController {
     }
 
     public void handleUpdatePressed(String event, String context, String effects) {
-
-        smModel.updateLinkEvent(event,context,effects);
-
+        if (iModel.getSelectionLink() != null) smModel.updateLinkEvent(event,context,effects,iModel.getSelectionLink());
+        else System.out.println("You need to select an Event Box to Update");
     }
 
 

@@ -10,7 +10,8 @@ public class AppController {
 
     InteractionModel iModel;
     SMModel smModel;
-    double prevX, prevY;
+    double prevX, prevY, panx, pany;
+    Boolean panning = false;
 
     private enum State {
         READY, PREPARE_CREATE, DRAGGING
@@ -37,13 +38,19 @@ public class AppController {
     public void handlePressed(double normX, double normY, MouseEvent event) {
         prevX = normX;
         prevY = normY;
+        panx = normX;
+        pany = normY;
 
         switch (currentState) {
             case READY -> {
                 // context: are we on a box?
                 boolean eventBoxHit = smModel.checkEventBoxHit(normX,normY);
                 boolean hit = smModel.checkHit(normX, normY);
-                if (hit) {
+                if (iModel.getSelectedButtonIndex() == 1){
+                    System.out.println("press-1");
+                    currentState = State.DRAGGING;
+                }
+                else if (hit) {
                     // side effects:
                     // set selection
                     if (iModel.getSelectedButtonIndex() == 2) {
@@ -92,8 +99,11 @@ public class AppController {
 
         switch (currentState) {
             case DRAGGING -> {
-
-                if (iModel.getSelectedButtonIndex() == 0){
+                if (iModel.getSelectedButtonIndex() == 1){
+                    System.out.println("drag-1");
+                    iModel.moveView(dX,dY);
+                }
+                else if (iModel.getSelectedButtonIndex() == 0){
                     boolean eventBoxHit = smModel.checkEventBoxHit(normX,normY);
                     boolean hit = smModel.checkHit(normX, normY);
                     if (hit && iModel.getSelection() != null) {
@@ -108,7 +118,6 @@ public class AppController {
                 }
                 else {
 
-                    SMStateNode node = smModel.whichBox(normX,normY);
                     smModel.createLink(prevX, prevY, normX, normY);
                 }
             }
@@ -127,13 +136,14 @@ public class AppController {
     public void handleReleased(double normX, double normY, MouseEvent event) {
         switch (currentState) {
             case DRAGGING -> {
-
-//                iModel.unselect();
-                // move to new state
                 boolean hit = smModel.checkHit(normX, normY);
-                if (hit){
+                if (iModel.getSelectedButtonIndex() == 1){
+
+                    currentState = State.READY;
+                }
+                // move to new state
+                else if (hit){
                     if (iModel.getSelectedButtonIndex() == 2){
-//                        SMStateNode node = smModel.whichBox(normX,normY);
                         SMTransitionLink linkCreated = smModel.createLink(Double.MAX_VALUE, Double.MAX_VALUE,normX,normY);
                         iModel.setSelection(null);
                         iModel.setSelectionLink(linkCreated);
@@ -158,6 +168,7 @@ public class AppController {
 //                }
             }
         }
+//        panning = false;
     }
 
     public void handleStateUpdate(String state) {
@@ -169,6 +180,11 @@ public class AppController {
         else System.out.println("You need to select an Event Box to Update");
     }
 
+    public void handleDeleteKeyPressed() {
+        if (iModel.getSelection() != null) smModel.deleteNode(iModel.getSelection());
+        else if (iModel.getSelectionLink() != null) smModel.deleteLink(iModel.getSelectionLink());
+        else System.out.println("NOTHING SELECTED TO DELETE");
 
+    }
 
 }

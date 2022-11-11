@@ -2,7 +2,7 @@ package Model;
 
 import javafx.scene.control.Label;
 
-public class SMTransitionLink {
+public class SMTransitionLink extends SmItem{
 
     public double startX, startY, endX, endY;
     public double left, top, width, height;
@@ -17,20 +17,16 @@ public class SMTransitionLink {
             startY = newStartY;
             endX = newendX;
             endY = newendY;
-//        System.out.println("strtx"+newStartX);
-//        System.out.println("endx"+newendX);
 
-        left = (newStartX+newendX)/2;
+            left = (newStartX+newendX)/2;
             top = (newStartY+newendY)/2;
             width = 0.3;
             height = 0.25;
         }
 
         public boolean checkHit(double x, double y) {
-            System.out.println(x+"---"+y+"==="+height+"^^^^"+width);
             return x >= left-0.1 && x <= left+width-0.1 && y >= top-0.1 && y <= top+height-0.1;
         }
-
         public void moveLineEnd(double dX, double dY) {
             endX += dX;
             endY += dY;

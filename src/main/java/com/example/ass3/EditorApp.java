@@ -12,9 +12,11 @@ public class EditorApp extends Application {
     public void start(Stage stage) throws IOException {
         MainUI main = new MainUI();
         Scene scene = new Scene(main, 900, 750);
-        stage.setTitle("Hello!");
+        stage.setTitle("State Machine Editor");
         stage.setScene(scene);
         stage.show();
+
+        scene.setOnKeyPressed(e -> main.appController.handleDeleteKeyPressed());
     }
 
     public static void main(String[] args) {

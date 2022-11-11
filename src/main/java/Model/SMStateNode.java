@@ -1,6 +1,6 @@
 package Model;
 
-public class SMStateNode {
+public class SMStateNode extends SmItem {
 
     public double left, top, width, height;
     public String state = "Default";

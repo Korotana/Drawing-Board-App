@@ -125,20 +125,20 @@ public class SMModel {
             SMStateNode node = whichBox(dx,dy);
             if (nodeLinksEnd.containsKey(node)){
                 ArrayList<SMTransitionLink> prevlinks = nodeLinksEnd.get(node);
-                prevlinks.add(links.get(linkCount-1));
+                prevlinks.add(links.get(links.size()-1));
                 nodeLinksEnd.put(node,prevlinks);
             }else {
                 ArrayList<SMTransitionLink> templink = new ArrayList<>();
-                templink.add(links.get(linkCount-1));
+                templink.add(links.get(links.size()-1));
                 nodeLinksEnd.put(node,templink);
             }
             if (nodeLinksStart.containsKey(initialNode)){
                 ArrayList<SMTransitionLink> prevlinks = nodeLinksStart.get(initialNode);
-                prevlinks.add(links.get(linkCount-1));
+                prevlinks.add(links.get(links.size()-1));
                 nodeLinksStart.put(initialNode,prevlinks);
             }else {
                 ArrayList<SMTransitionLink> templink = new ArrayList<>();
-                templink.add(links.get(linkCount-1));
+                templink.add(links.get(links.size()-1));
                 nodeLinksStart.put(initialNode,templink);
             }
         }else {
@@ -154,6 +154,37 @@ public class SMModel {
         selectionLink.context = context;
         selectionLink.sideEffects = effects;
         notifySubscribers();
+    }
+
+    public void deleteNode(SMStateNode selection) {
+        nodes.remove(selection);
+        System.out.println(links);
+        if (links.size() > 0 && nodeLinksStart.get(selection) != null) {
+            links.removeAll(nodeLinksStart.get(selection));
+            linkCount = links.size();
+//            for (SMTransitionLink link: nodeLinksStart.get(selection)) {
+//                deleteLink(link);
+//            }
+        }
+
+        if (links.size() > 0 && nodeLinksEnd.get(selection) != null) {
+            links.removeAll(nodeLinksEnd.get(selection));
+            linkCount = links.size();
+        }
+
+        nodeLinksStart.remove(selection);
+        nodeLinksEnd.remove(selection);
+        notifySubscribers();
+    }
+
+    public void deleteLink(SMTransitionLink selectionLink) {
+        links.remove(selectionLink);
+        nodeLinksStart.forEach((node, nodelinks) -> nodelinks.remove(selectionLink));
+        nodeLinksEnd.forEach((node, nodelinks) -> nodelinks.remove(selectionLink));
+        eventLinksStart.remove(selectionLink);
+        eventLinksEnd.remove(selectionLink);
+        notifySubscribers();
+
     }
 
 //    public void createDragLink(double prevX, double prevY, double normX, double normY) {

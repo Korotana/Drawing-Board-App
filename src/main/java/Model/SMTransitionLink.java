@@ -27,6 +27,11 @@ public class SMTransitionLink extends SmItem{
         public boolean checkHit(double x, double y) {
             return x >= left-0.1 && x <= left+width-0.1 && y >= top-0.1 && y <= top+height-0.1;
         }
+
+        public boolean checkCircleHit(double x, double y){
+            return x >= startX && x <= startX+endX && y >= startY && y <= startY+endY;
+        }
+
         public void moveLineEnd(double dX, double dY) {
             endX += dX;
             endY += dY;
@@ -42,6 +47,7 @@ public class SMTransitionLink extends SmItem{
         left += dX;
         top += dY;
     }
+
 }
 
 

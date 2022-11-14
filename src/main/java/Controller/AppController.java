@@ -6,12 +6,13 @@ import Model.SMStateNode;
 import Model.SMTransitionLink;
 import javafx.scene.input.MouseEvent;
 
+import java.util.Map;
+
 public class AppController {
 
     InteractionModel iModel;
     SMModel smModel;
     double prevX, prevY, panx, pany;
-    Boolean panning = false;
 
     private enum State {
         READY, PREPARE_CREATE, DRAGGING
@@ -45,9 +46,9 @@ public class AppController {
             case READY -> {
                 // context: are we on a box?
                 boolean eventBoxHit = smModel.checkEventBoxHit(normX,normY);
+                Map.Entry<SMStateNode,SMTransitionLink> circularEventBoxLink = smModel.checkCircleEventBox(normX,normY);
                 boolean hit = smModel.checkHit(normX, normY);
                 if (iModel.getSelectedButtonIndex() == 1){
-                    System.out.println("press-1");
                     currentState = State.DRAGGING;
                 }
                 else if (hit) {
@@ -63,7 +64,6 @@ public class AppController {
                     }
                     else {
                         iModel.setSelection(smModel.whichBox(normX, normY));
-                        iModel.setSelectionLink(null);
 
                     // move to new state
                         currentState = State.DRAGGING;}
@@ -74,14 +74,20 @@ public class AppController {
                         smModel.lineX = normX;
                         smModel.lineY = normY;
                         smModel.initialLink = link;
-//                        smModel.createLink(prevX, prevY, normX, normY);
                         currentState = State.DRAGGING;
                     }
                     else {
-                        iModel.setSelectionLink(smModel.whichEventBox(normX, normY));
-                        iModel.setSelection(null);
+                        SMTransitionLink link = smModel.whichEventBox(normX, normY);
+                        smModel.links.remove(link);
+                        smModel.links.add(link);
+                        iModel.setSelectionLink(link);
                         // move to new state
                         currentState = State.DRAGGING;}
+                }else if (circularEventBoxLink != null){
+                    smModel.circularLink.remove(circularEventBoxLink.getKey());
+                    smModel.circularLink.put(circularEventBoxLink.getKey(),circularEventBoxLink.getValue());
+                    iModel.setSelectionLink(circularEventBoxLink.getValue());
+                    currentState = State.DRAGGING;
                 }
                 else {
                     // side effects
@@ -106,6 +112,7 @@ public class AppController {
                 else if (iModel.getSelectedButtonIndex() == 0){
                     boolean eventBoxHit = smModel.checkEventBoxHit(normX,normY);
                     boolean hit = smModel.checkHit(normX, normY);
+                    Map.Entry<SMStateNode,SMTransitionLink> circularEventBoxLink = smModel.checkCircleEventBox(normX,normY);
                     if (hit && iModel.getSelection() != null) {
                         smModel.moveBox(iModel.getSelection(), dX, dY);
                         iModel.deSelectEventBox();
@@ -114,10 +121,11 @@ public class AppController {
                         smModel.moveEventBox(iModel.getSelectionLink(), dX, dY);
                         iModel.deselectNode();
                     }
-//                    smModel.moveLink(iModel.getSelectionLink(), dX, dY);
+                    if (circularEventBoxLink !=null && iModel.getSelectionLink() != null){
+                        smModel.moveBox(circularEventBoxLink.getKey(),dX,dY);
+                    }
                 }
                 else {
-
                     smModel.createLink(prevX, prevY, normX, normY);
                 }
             }
@@ -138,14 +146,12 @@ public class AppController {
             case DRAGGING -> {
                 boolean hit = smModel.checkHit(normX, normY);
                 if (iModel.getSelectedButtonIndex() == 1){
-
                     currentState = State.READY;
                 }
                 // move to new state
                 else if (hit){
                     if (iModel.getSelectedButtonIndex() == 2){
                         SMTransitionLink linkCreated = smModel.createLink(Double.MAX_VALUE, Double.MAX_VALUE,normX,normY);
-                        iModel.setSelection(null);
                         iModel.setSelectionLink(linkCreated);
                     }
                 }
@@ -157,12 +163,9 @@ public class AppController {
             case PREPARE_CREATE -> {
 
                 boolean eventBoxHit = smModel.checkEventBoxHit(normX,normY);
-                if (eventBoxHit) {iModel.setSelectionLink(smModel.whichEventBox(normX,normY));
-                iModel.setSelection(null);
-                }
+                if (eventBoxHit) {iModel.setSelectionLink(smModel.whichEventBox(normX,normY));}
                 else {smModel.createNode(normX,normY);
-                iModel.setSelection(smModel.whichBox(normX, normY));
-                iModel.setSelectionLink(null);}
+                iModel.setSelection(smModel.whichBox(normX, normY));}
                 // move to new state
                 currentState = State.READY;
 //                }
@@ -172,7 +175,8 @@ public class AppController {
     }
 
     public void handleStateUpdate(String state) {
-        smModel.updateState(state,iModel.getSelection());
+        System.out.println("instate update");
+        smModel.updateState(state, iModel.getSelection());
     }
 
     public void handleUpdatePressed(String event, String context, String effects) {

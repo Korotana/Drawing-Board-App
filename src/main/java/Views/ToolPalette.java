@@ -5,6 +5,8 @@ import Interface.IModelListener;
 import Model.InteractionModel;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.ImageCursor;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -49,7 +51,7 @@ public class ToolPalette extends StackPane implements IModelListener {
         arrow.setMaxWidth(90);
         arrow.setMaxHeight(90);
         arrow.setBackground(new Background(new BackgroundFill(Color.CYAN,new CornerRadii(10),null)));
-        FileInputStream input = new FileInputStream("src/main/java/Views/arrow-img.png");
+        FileInputStream input = new FileInputStream("src/main/java/Views/cursor.png");
         ImageView imageView = new ImageView(new Image(input));
         imageView.setFitHeight(80);
         imageView.setFitWidth(80);
@@ -63,7 +65,7 @@ public class ToolPalette extends StackPane implements IModelListener {
         move.setMaxWidth(90);
         move.setMaxHeight(90);
         move.setBackground(new Background(new BackgroundFill(Color.CYAN,new CornerRadii(10),new Insets(5,5,5,5))));
-        FileInputStream input = new FileInputStream("src/main/java/Views/arrow-img.jpg");
+        FileInputStream input = new FileInputStream("src/main/java/Views/move.png");
         ImageView imageView = new ImageView(new Image(input));
         imageView.setFitHeight(80);
         imageView.setFitWidth(80);
@@ -77,7 +79,7 @@ public class ToolPalette extends StackPane implements IModelListener {
         Link.setMaxWidth(90);
         Link.setMaxHeight(90);
         Link.setBackground(new Background(new BackgroundFill(Color.CYAN,new CornerRadii(10),new Insets(5,5,5,5))));
-        FileInputStream input = new FileInputStream("src/main/java/Views/plus-img.jpg");
+        FileInputStream input = new FileInputStream("src/main/java/Views/crosshair.png");
         ImageView imageView = new ImageView(new Image(input));
         imageView.setFitHeight(80);
         imageView.setFitWidth(80);
@@ -107,5 +109,9 @@ public class ToolPalette extends StackPane implements IModelListener {
                 b.setBackground(new Background(new BackgroundFill(Color.CYAN,new CornerRadii(10),null)));
             }
         });
+        if (iModel.getSelectedButtonIndex() == 1) this.setCursor(Cursor.MOVE);
+        else if (iModel.getSelectedButtonIndex() == 2) this.setCursor(Cursor.CROSSHAIR);
+        else this.setCursor(Cursor.DEFAULT);
+
     }
 }

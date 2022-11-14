@@ -47,11 +47,13 @@ public class InteractionModel {
 
     public void setSelection(SMStateNode node) {
         selection = node;
+        selectionLink = null;
         notifySmSubscribers();
     }
 
     public void setSelectionLink(SMTransitionLink link){
         selectionLink = link;
+        selection = null;
         notifySmSubscribers();
     }
 

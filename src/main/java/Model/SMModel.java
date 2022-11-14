@@ -4,6 +4,8 @@ import Interface.SMModelListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SMModel {
 
@@ -11,6 +13,7 @@ public class SMModel {
     public ArrayList<SMTransitionLink> links = new ArrayList<>();
     public HashMap<SMStateNode, ArrayList<SMTransitionLink>> nodeLinksStart = new HashMap<>();
     public HashMap<SMStateNode, ArrayList<SMTransitionLink>> nodeLinksEnd = new HashMap<>();
+    public HashMap<SMStateNode, SMTransitionLink> circularLink = new LinkedHashMap<>();
     public HashMap<SMTransitionLink, ArrayList<SMTransitionLink>> eventLinksStart = new HashMap<>();
     public HashMap<SMTransitionLink, ArrayList<SMTransitionLink>> eventLinksEnd = new HashMap<>();
     public double lineX, lineY;
@@ -32,8 +35,7 @@ public class SMModel {
     }
 
     public boolean checkEventBoxHit(double x, double y) {
-        return links.stream()
-                .anyMatch(b -> b.checkHit(x,y));
+        return links.stream().anyMatch(b -> b.checkHit(x,y));
     }
 
     public SMStateNode whichBox(double x, double y) {
@@ -58,7 +60,9 @@ public class SMModel {
 
     public void moveBox(SMStateNode node, double dX, double dY) {
         node.move(dX,dY);
-
+        if (circularLink.get(node) != null){
+            circularLink.get(node).moveLineStart(dX, dY);
+        }
         nodeLinksStart.forEach((startNode,nodelinks) -> {
             if (startNode == node){
                 for (SMTransitionLink nodelink: nodelinks) {
@@ -116,22 +120,27 @@ public class SMModel {
         SMStateNode circleBox = whichBox(lineX,lineY);
         if (circleBox == whichBox(dx,dy)){
             //Create Circle
-
-        }
-        links.add(link);
-        notifySubscribers();
-        if (startX == Double.MAX_VALUE){
-            linkCount+=1;
+            link = new SMTransitionLink(circleBox.left + circleBox.width + circleBox.width/3, circleBox.top,
+                    0.3,0.25);
+            if (startX == Double.MAX_VALUE){
+                circularLink.put(circleBox,link);
+            }
+        }else {
             SMStateNode node = whichBox(dx,dy);
-            if (nodeLinksEnd.containsKey(node)){
-                ArrayList<SMTransitionLink> prevlinks = nodeLinksEnd.get(node);
-                prevlinks.add(links.get(links.size()-1));
-                nodeLinksEnd.put(node,prevlinks);
-            }else {
+            links.add(link);
+            notifySubscribers();
+            if (startX == Double.MAX_VALUE){
+                linkCount+=1;
+                if (nodeLinksEnd.containsKey(node)){
+                    ArrayList<SMTransitionLink> prevlinks = nodeLinksEnd.get(node);
+                    prevlinks.add(links.get(links.size()-1));
+                    nodeLinksEnd.put(node,prevlinks);
+            }
+                else {
                 ArrayList<SMTransitionLink> templink = new ArrayList<>();
                 templink.add(links.get(links.size()-1));
                 nodeLinksEnd.put(node,templink);
-            }
+                }
             if (nodeLinksStart.containsKey(initialNode)){
                 ArrayList<SMTransitionLink> prevlinks = nodeLinksStart.get(initialNode);
                 prevlinks.add(links.get(links.size()-1));
@@ -146,6 +155,7 @@ public class SMModel {
                 links.remove(link);
             }
         }
+        }
         return link;
     }
 
@@ -158,7 +168,7 @@ public class SMModel {
 
     public void deleteNode(SMStateNode selection) {
         nodes.remove(selection);
-        System.out.println(links);
+//        System.out.println(links);
         if (links.size() > 0 && nodeLinksStart.get(selection) != null) {
             links.removeAll(nodeLinksStart.get(selection));
             linkCount = links.size();
@@ -177,14 +187,31 @@ public class SMModel {
         notifySubscribers();
     }
 
+    SMStateNode tempCircularNode = null;
     public void deleteLink(SMTransitionLink selectionLink) {
+        tempCircularNode = null;
         links.remove(selectionLink);
+        circularLink.forEach(((node, link) -> {if (link == selectionLink) tempCircularNode = node;}));
         nodeLinksStart.forEach((node, nodelinks) -> nodelinks.remove(selectionLink));
         nodeLinksEnd.forEach((node, nodelinks) -> nodelinks.remove(selectionLink));
         eventLinksStart.remove(selectionLink);
         eventLinksEnd.remove(selectionLink);
+        linkCount = links.size();
+        circularLink.remove(tempCircularNode);
         notifySubscribers();
 
+    }
+
+    public Map.Entry<SMStateNode,SMTransitionLink> checkCircleEventBox(double normX, double normY) {
+
+        for (Map.Entry<SMStateNode,SMTransitionLink> elements : circularLink.entrySet()){
+            if (elements.getValue().checkCircleHit(normX,normY)) {
+                System.out.println("found circle element hit");
+                return elements;
+            }
+        }
+        System.out.println("found no element hit");
+        return null;
     }
 
 //    public void createDragLink(double prevX, double prevY, double normX, double normY) {

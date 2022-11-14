@@ -7,13 +7,15 @@ import Model.InteractionModel;
 import Model.SMModel;
 import Model.SMStateNode;
 import Model.SMTransitionLink;
+import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class DiagramView extends StackPane implements SMModelListener, IModelListener {
     GraphicsContext gc;
@@ -41,11 +43,14 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
         gc = myCanvas.getGraphicsContext2D();
         gc.setFill(Color.rgb(171,255,247));
         gc.fillRect(0,0,width,height);
-        linkPropertiesView.stateSideEffects.setPrefHeight(200);
-        linkPropertiesView.stateContext.setPrefHeight(200);
-        Label stateLabel = new Label("Event:");
-        stateBox.getChildren().addAll(stateLabel,nodePropertiesView.state);
+        gc.setFont(new Font(0.02 *width));
+        linkPropertiesView.stateSideEffects.setMinHeight(0.2*height);
+        linkPropertiesView.stateContext.setMinHeight(0.2*height);
+        nodePropertiesView.stateButton.setMinWidth(stateBox.getWidth());
+        stateBox.getChildren().addAll(nodePropertiesView.stateButton, nodePropertiesView.stateLabel, nodePropertiesView.state);
         stateBox.setBackground(new Background(new BackgroundFill(Color.DARKGRAY,null,null)));
+        stateBox.setSpacing(10);
+        stateBox.setPadding(new Insets(20,0,0,0));
         Box.getChildren().addAll(myCanvas,stateBox);
         this.getChildren().addAll(Box);
     }
@@ -81,12 +86,30 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
         gc.fillRect(0,0,width,height);
         gc.setLineWidth(3.0);
         gc.stroke();
-        System.out.println("dv---"+model.links);
+
+        if (model.circularLink.size() != 0) {
+            model.circularLink.forEach((node, circlelink) -> {
+                if (circlelink == iModel.getSelectionLink()) {
+                    gc.setFill(Color.CYAN);
+                    gc.setStroke(Color.BLACK);
+                }
+                else {
+                gc.setFill(Color.ALICEBLUE);
+                gc.setStroke(Color.YELLOW);}
+                gc.strokeOval((node.left + node.width)*width,node.top*height,(0.08*width),0.08*width);
+                gc.strokeLine((node.left + node.width)*width,node.top*height + (0.08*width)/2,(node.left + node.width)*width + (0.08*width) ,node.top*height + (0.08*width)/2);
+                gc.strokeRect(circlelink.startX*width, circlelink.startY*height, circlelink.endX*width, circlelink.endY*height);
+                gc.fillRect(circlelink.startX*width, circlelink.startY*height, circlelink.endX*width, circlelink.endY*height);
+                fillCircleEventDetails(circlelink);
+            });
+        }
         for (SMTransitionLink link: model.links) {
 
 //            updateLinkBounds(link);
             gc.strokeLine(link.startX * width,link.startY*height,link.left*width,link.top*height);
             gc.strokeLine(link.left*width,link.top*height,link.endX*width,link.endY*height);
+
+
 
 //            if (link.startX < link.left) {
 //                if (link.startY < link.top){
@@ -168,10 +191,18 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
                 gc.setFill(Color.ALICEBLUE);
                 gc.setStroke(Color.YELLOW);
             }
+//            SMStateNode node = model.whichBox(link.startX,link.startY)
+//            if ( == model.whichBox(link.endX,link.endY)){
+//                gc.strokeOval((node.left + node.width)*width,node.top*height,(0.08*width),0.08*width);
+//                gc.strokeRect(circlelink.startX*width, circlelink.startY*height, circlelink.endX*width, circlelink.endY*height);
+//                gc.fillRect(circlelink.startX*width, circlelink.startY*height, circlelink.endX*width, circlelink.endY*height);
+////            gc.fillRect(circlelink.left * width - (0.1 * width), circlelink.top * height - (0.1 * height), circlelink.width * width, circlelink.height * height);
+//
+//            }
 
-            gc.strokeRect(link.left*width-(0.1 * width),link.top*height-(0.1 * height),link.width*width,link.height*height);
-            gc.fillRect(link.left*width-(0.1 * width),link.top*height-(0.1 * height),link.width*width,link.height*height);
-
+                gc.strokeRect(link.left * width - (0.1 * width), link.top * height - (0.1 * height), link.width * width, link.height * height);
+                gc.fillRect(link.left * width - (0.1 * width), link.top * height - (0.1 * height), link.width * width, link.height * height);
+//            }
             fillEventDetails(link);
 
         }
@@ -193,8 +224,23 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
             gc.setFill(Color.BLACK);
             gc.setStroke(Color.BLACK);
             gc.fillText(node.state,(node.left+(node.width/2)) * width,(node.top+(node.height/2)) * height);
-//            gc.setFill(Color.ORANGE);
         }
+    }
+
+    private void fillCircleEventDetails(SMTransitionLink circlelink) {
+
+        gc.setFill(Color.BLACK);
+        gc.setStroke(Color.BLACK);
+        gc.fillText(circlelink.eventLabel,circlelink.startX*width,circlelink.startY*height + (0.02*height));
+        gc.fillText(circlelink.contextLabel,circlelink.startX*width,circlelink.startY*height + (0.09*height));
+        gc.fillText(circlelink.effectsLabel,circlelink.startX*width,circlelink.startY*height + (0.18*height));
+
+        gc.fillText(circlelink.event,circlelink.startX*width,circlelink.startY*height + (0.04*height));
+        gc.fillText(circlelink.context,circlelink.startX*width,circlelink.startY*height + (0.2*height));
+        gc.fillText(circlelink.sideEffects,circlelink.startX*width,circlelink.startY*height + (0.11*height));
+//        gc.fillText(link.event,link.left*width-(0.08 * width),link.top*height-(0.06 * height));
+//        gc.fillText(link.context,link.left*width-(0.08 * width),link.top*height-(0.01 * height));
+//        gc.fillText(link.sideEffects,link.left*width-(0.08 * width),link.top*height+(0.05 * height));
     }
 
     private void updateLinkBounds(SMTransitionLink link) {
@@ -213,44 +259,39 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
         gc.fillText(link.effectsLabel,link.left*width-(0.08 * width),link.top*height+(0.03 * height));
 
         gc.fillText(link.event,link.left*width-(0.08 * width),link.top*height-(0.06 * height));
-        gc.fillText(link.context,link.left*width-(0.08 * width),link.top*height-(0.01 * height));
-        gc.fillText(link.sideEffects,link.left*width-(0.08 * width),link.top*height+(0.05 * height));
+        gc.fillText(link.context,link.left*width-(0.08 * width),link.top*height+(0.05 * height));
+        gc.fillText(link.sideEffects,link.left*width-(0.08 * width),link.top*height-(0.01 * height));
     }
+
+
 
     @Override
     public void modelChanged() {
-//        iModel
         draw();
+        updateToolPalleteChange();
     }
 
-    public void setSmModel(SMModel smModel) {
-        model = smModel;
-    }
+    public void setSmModel(SMModel smModel) {model = smModel;}
 
     @Override
     public void iModelChanged() {
         draw();
         updateToolPalleteChange();
+        if (iModel.getSelectedButtonIndex() == 1) this.setCursor(Cursor.MOVE);
+        else if (iModel.getSelectedButtonIndex() == 2) this.setCursor(Cursor.CROSSHAIR);
+        else this.setCursor(Cursor.DEFAULT);
     }
 
     private void updateToolPalleteChange() {
         stateBox.getChildren().clear();
-        if (iModel.getSelectedButtonIndex() == 2){
-            stateBox.getChildren().addAll(linkPropertiesView.eventLabel,linkPropertiesView.stateEvent,linkPropertiesView.contextLabel,linkPropertiesView.stateSideEffects,linkPropertiesView.effectsLabel,linkPropertiesView.stateContext,update);}
+        if (iModel.getSelectedButtonIndex() == 2 || iModel.getSelectionLink() != null){
+            stateBox.getChildren().addAll(linkPropertiesView.transition, linkPropertiesView.eventLabel,linkPropertiesView.stateEvent,linkPropertiesView.contextLabel,linkPropertiesView.stateSideEffects,linkPropertiesView.effectsLabel,linkPropertiesView.stateContext,update);}
         else {
-            stateBox.getChildren().addAll(nodePropertiesView.stateLabel,nodePropertiesView.state);
+            nodePropertiesView.stateButton.setMinWidth(0.02*width);
+            stateBox.getChildren().addAll(nodePropertiesView.stateButton, nodePropertiesView.stateLabel,nodePropertiesView.state);
         }
-
+        stateBox.setPadding(new Insets(20,0,0,0));
+        stateBox.setSpacing(10);
     }
 }
 
-
-//            if (link.startX > link.left && model.lineX == link.startX){
-//                gc.setStroke(Color.RED);
-//                gc.strokeLine((link.left) * width,(link.top)*height,(link.left*width)+40,(link.top*height)+30);
-//                gc.strokeLine((link.left) * width,(link.top)*height,(link.left*width)+20,(link.top*height)-30);
-//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width)*2)-40,((link.startY*height)*2)-40);
-//            }else {
-//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width)/2)+40,((link.startY*height)/2)+40);
-//                gc.strokeLine((link.startX * width)*2,(link.startY*height)*2,((link.startX * width))/2-40,((link.startY*height)/2)-40);
-//            }

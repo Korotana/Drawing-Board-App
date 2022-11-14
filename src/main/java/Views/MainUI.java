@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 public class MainUI extends StackPane {
 
     public AppController appController;
+    public int selectedButton;
 
     public MainUI() throws FileNotFoundException {
 
@@ -55,6 +56,7 @@ public class MainUI extends StackPane {
         minidiagramView.Box.getChildren().remove(minidiagramView.stateBox);
         stack.getChildren().addAll(minidiagramView,diagramView);
 
+        selectedButton = interactionModel.getSelectedButtonIndex();
         mainBox.getChildren().addAll(toolPalette, stack);
         this.getChildren().addAll(mainBox);
 

@@ -35,7 +35,6 @@ public class SMTransitionLink extends SmItem{
         public void moveLineEnd(double dX, double dY) {
             endX += dX;
             endY += dY;
-//            if (endY-dY)
         }
 
     public void moveLineStart(double dX, double dY) {

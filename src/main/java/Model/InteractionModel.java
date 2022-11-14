@@ -90,13 +90,13 @@ public class InteractionModel {
     }
 
     public void moveView(double dX, double dY) {
-        System.out.println("Im In");
-        viewLeft -= dX;
-        viewTop -= dY;
-        if (viewLeft < 0) viewLeft = 0;
-        if (viewLeft > (1.0 - viewWidth)) viewLeft = 1.0 - viewWidth;
-        if (viewTop < 0) viewTop = 0;
-        if (viewTop > (1.0 - viewHeight)) viewTop = 1.0 - viewHeight;
+
+//        viewLeft -= dX;
+//        viewTop -= dY;
+//        if (viewLeft < 0) viewLeft = 0;
+//        if (viewLeft > (1.0 - viewWidth)) viewLeft = 1.0 - viewWidth;
+//        if (viewTop < 0) viewTop = 0;
+//        if (viewTop > (1.0 - viewHeight)) viewTop = 1.0 - viewHeight;
         notifySubscribers();
     }
 

@@ -168,13 +168,9 @@ public class SMModel {
 
     public void deleteNode(SMStateNode selection) {
         nodes.remove(selection);
-//        System.out.println(links);
         if (links.size() > 0 && nodeLinksStart.get(selection) != null) {
             links.removeAll(nodeLinksStart.get(selection));
             linkCount = links.size();
-//            for (SMTransitionLink link: nodeLinksStart.get(selection)) {
-//                deleteLink(link);
-//            }
         }
 
         if (links.size() > 0 && nodeLinksEnd.get(selection) != null) {
@@ -206,22 +202,46 @@ public class SMModel {
 
         for (Map.Entry<SMStateNode,SMTransitionLink> elements : circularLink.entrySet()){
             if (elements.getValue().checkCircleHit(normX,normY)) {
-                System.out.println("found circle element hit");
                 return elements;
             }
         }
-        System.out.println("found no element hit");
         return null;
     }
 
-//    public void createDragLink(double prevX, double prevY, double normX, double normY) {
-//        SMTransitionLink link = new SMTransitionLink(lineX,lineY, normX, normY);
-//        templinks.add(link);
-//        notifySubscribers();
-//        templinks.remove(link);
-//    }
+    public void pan(double dX, double dY) {
 
-//    public void updateEvents(String state, ) {
-//
-//    }
+        for (SMTransitionLink link: links) {
+            link.move(dX,dY);
+        }
+
+        eventLinksStart.forEach((startlink,nodelinks) -> {
+            for (SMTransitionLink nodelink: nodelinks) {
+                nodelink.moveLineStart(dX, dY);
+            }
+        });
+        eventLinksEnd.forEach((endlink,nodelinks) -> {
+            for (SMTransitionLink nodelink: nodelinks) {
+                nodelink.moveLineEnd(dX, dY);
+            }
+        });
+
+        nodeLinksStart.forEach((startlink,nodelinks) -> {
+            for (SMTransitionLink nodelink: nodelinks) {
+                nodelink.moveLineStart(dX, dY);
+            }
+        });
+        nodeLinksEnd.forEach((endlink,nodelinks) -> {
+            for (SMTransitionLink nodelink: nodelinks) {
+                nodelink.moveLineEnd(dX, dY);
+            }
+        });
+
+        for (SMStateNode node: nodes) node.move(dX,dY);
+
+        circularLink.forEach((node, link) -> link.moveLineStart(dX,dY));
+
+        notifySubscribers();
+
+
+    }
 }

@@ -61,10 +61,4 @@ public class MainUI extends StackPane {
         this.getChildren().addAll(mainBox);
 
     }
-
-//    public void deletePressed() {
-//        this.setOnKeyPressed(e -> {
-//            if (e.getCode().equals(KeyCode.DELETE)) appController.handleDeleteKeyPressed();
-//        });
-//    }
 }

@@ -105,84 +105,12 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
         }
         for (SMTransitionLink link: model.links) {
 
-//            updateLinkBounds(link);
+            gc.setStroke(Color.MAGENTA); //TO DENOTE LINK START || LINK FROM
             gc.strokeLine(link.startX * width,link.startY*height,link.left*width,link.top*height);
+
+
+            gc.setStroke(Color.FIREBRICK); //TO DENOTE LINK END || LINK TO
             gc.strokeLine(link.left*width,link.top*height,link.endX*width,link.endY*height);
-
-
-
-//            if (link.startX < link.left) {
-//                if (link.startY < link.top){
-//                    double arrowStartX = link.startX+(link.left-link.startX)/3;
-//                    double arrowStartY = (link.startY+(link.top-link.startY)/3);
-//                    gc.strokeLine(arrowStartX*width, arrowStartY*height,
-//                            arrowStartX*width-(width*0.05), arrowStartY*height-(height*0.05));
-//
-//                    gc.strokeLine(arrowStartX*width, arrowStartY*height,
-//                            arrowStartX*width+(width*0.05), arrowStartY*height-(height*0.05));
-//
-//                }else {
-//                    double arrowStartX = link.startX-(link.left-link.startX)/3;
-//                    double arrowStartY = (link.startY-(link.startY-link.top)/3);
-//                    gc.strokeLine(arrowStartX*width, arrowStartY*height,
-//                            arrowStartX*width-(width*0.05), (arrowStartY*height)+(height*0.05));
-//
-//                    gc.strokeLine(arrowStartX*width, arrowStartY*height,
-//                            arrowStartX*width+(width*0.05), (arrowStartY*height)+(height*0.05));
-//
-//                }
-
-//                gc.strokeLine(
-//                        (link.left+link.startX)/2*width,
-//                        ((link.top+link.startY)/2*height),
-//                        (link.left+link.startX)/2*width-(width*0.05),
-//                        ((link.startY+link.top)/2*height)+(height*0.05));
-//
-//                gc.strokeLine(
-//                        (link.left+link.endX)/2*width,
-//                        ((link.top+link.endY)/2*height),
-//                        (link.left+link.endX)/2*width-(width*0.05),
-//                        ((link.endY+link.top)/2*height)-(height*0.05));
-//
-//                gc.strokeLine(
-//                        (link.left+link.endX)/2*width,
-//                        ((link.top+link.endY)/2*height),
-//                        (link.left+link.endX)/2*width-(width*0.05),
-//                        ((link.endY+link.top)/2*height)+(height*0.05));
-//            }
-
-
-//            if (link.startX > link.left) {gc.strokeLine(
-//                    (link.left+link.startX)/2*width,
-//                    ((link.top+link.startY)/2*height),
-//                    (link.left+link.startX)/2*width+(width*0.05),
-//                    ((link.startY+link.top)/2*height)+(height*0.05));
-//
-//                gc.strokeLine(
-//                        (link.left+link.startX)/2*width,
-//                        ((link.top+link.startY)/2*height),
-//                        (link.left+link.startX)/2*width-(width*0.05),
-//                        ((link.startY+link.top)/2*height)+(height*0.05));
-//
-//                gc.strokeLine(
-//                        (link.left+link.endX)/2*width,
-//                        ((link.top+link.endY)/2*height),
-//                        (link.left+link.endX)/2*width+(width*0.05),
-//                        ((link.endY+link.top)/2*height)+(height*0.05));
-//
-//                gc.strokeLine(
-//                        (link.left+link.endX)/2*width,
-//                        ((link.top+link.endY)/2*height),
-//                        (link.left+link.endX)/2*width-(width*0.05),
-//                        ((link.endY+link.top)/2*height)+(height*0.05));
-//            }
-
-
-
-
-//            gc.strokeLine((link.left+link.endX)/2*width,((link.top+link.endY)/2*height),(link.left+link.endX)/2*width+40,((link.endY+link.top)/2*height)-40);
-//            gc.strokeLine((link.left+link.endX)/2*width,((link.top+link.endY)/2*height),(link.left+link.endX)/2*width-40,((link.endY+link.top)/2*height)+40);
-//            gc.strokeLine((link.left+link.startX)/2*width,((link.top+link.startY)/2*height),(link.left+link.startX)/2*width+30,((link.endY+link.startY)/2*height)-30);
 
             if (link == iModel.getSelectionLink()) {
                 gc.setFill(Color.CYAN);
@@ -191,18 +119,9 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
                 gc.setFill(Color.ALICEBLUE);
                 gc.setStroke(Color.YELLOW);
             }
-//            SMStateNode node = model.whichBox(link.startX,link.startY)
-//            if ( == model.whichBox(link.endX,link.endY)){
-//                gc.strokeOval((node.left + node.width)*width,node.top*height,(0.08*width),0.08*width);
-//                gc.strokeRect(circlelink.startX*width, circlelink.startY*height, circlelink.endX*width, circlelink.endY*height);
-//                gc.fillRect(circlelink.startX*width, circlelink.startY*height, circlelink.endX*width, circlelink.endY*height);
-////            gc.fillRect(circlelink.left * width - (0.1 * width), circlelink.top * height - (0.1 * height), circlelink.width * width, circlelink.height * height);
-//
-//            }
 
                 gc.strokeRect(link.left * width - (0.1 * width), link.top * height - (0.1 * height), link.width * width, link.height * height);
                 gc.fillRect(link.left * width - (0.1 * width), link.top * height - (0.1 * height), link.width * width, link.height * height);
-//            }
             fillEventDetails(link);
 
         }
@@ -238,9 +157,6 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
         gc.fillText(circlelink.event,circlelink.startX*width,circlelink.startY*height + (0.04*height));
         gc.fillText(circlelink.context,circlelink.startX*width,circlelink.startY*height + (0.2*height));
         gc.fillText(circlelink.sideEffects,circlelink.startX*width,circlelink.startY*height + (0.11*height));
-//        gc.fillText(link.event,link.left*width-(0.08 * width),link.top*height-(0.06 * height));
-//        gc.fillText(link.context,link.left*width-(0.08 * width),link.top*height-(0.01 * height));
-//        gc.fillText(link.sideEffects,link.left*width-(0.08 * width),link.top*height+(0.05 * height));
     }
 
     private void updateLinkBounds(SMTransitionLink link) {
@@ -248,7 +164,6 @@ public class DiagramView extends StackPane implements SMModelListener, IModelLis
 //        link.startY = (link.startY - iModel.viewTop) * height;
 //        link.endX = (link.endX - iModel.viewLeft) * width;
 //        link.endY = (link.endY - iModel.viewTop) * height;
-        System.out.println("this");
     }
 
     private void fillEventDetails(SMTransitionLink link) {

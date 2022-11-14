@@ -33,7 +33,6 @@ public class ToolPalette extends StackPane implements IModelListener {
         buttonToolbar.setMaxWidth(100);
         buttonToolbar.setSpacing(5);
         buttonToolbar.setAlignment(Pos.BASELINE_LEFT);
-//        System.out.println("tool\n\n");
         this.getChildren().addAll(buttonToolbar);
 
     }

@@ -11,8 +11,6 @@ public class NodePropertiesView {
     TextField state = new TextField();
 
     public NodePropertiesView() {
-//        stateButton.setPrefWidth(400);
-//        stateButton.setPrefHeight(80);
         stateButton.setFont(new Font(20));
         stateButton.setDisable(false);
 

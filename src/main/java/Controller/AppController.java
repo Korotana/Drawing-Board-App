@@ -59,7 +59,6 @@ public class AppController {
                         smModel.lineX = normX;
                         smModel.lineY = normY;
                         smModel.initialNode = node;
-//                        smModel.createLink(prevX, prevY, normX, normY);
                         currentState = State.DRAGGING;
                     }
                     else {
@@ -106,8 +105,8 @@ public class AppController {
         switch (currentState) {
             case DRAGGING -> {
                 if (iModel.getSelectedButtonIndex() == 1){
-                    System.out.println("drag-1");
                     iModel.moveView(dX,dY);
+                    smModel.pan(dX,dY);
                 }
                 else if (iModel.getSelectedButtonIndex() == 0){
                     boolean eventBoxHit = smModel.checkEventBoxHit(normX,normY);
@@ -168,14 +167,11 @@ public class AppController {
                 iModel.setSelection(smModel.whichBox(normX, normY));}
                 // move to new state
                 currentState = State.READY;
-//                }
             }
         }
-//        panning = false;
     }
 
     public void handleStateUpdate(String state) {
-        System.out.println("instate update");
         smModel.updateState(state, iModel.getSelection());
     }
 

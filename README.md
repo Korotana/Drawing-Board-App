@@ -1,6 +1,6 @@
 # Drawing Board
 
-# CMPT 381 Assignment 3: 2D Graphics, MVC, Multiple Views
+# 2D Graphics, MVC, Multiple Views
 
 ## Overview
 This project is a JavaFX visual editor for building state-machine diagrams. It demonstrates concepts such as 2D graphics, immediate-mode interaction, the Model-View-Controller (MVC) architecture, multiple synchronized views, and view panning. The editor allows users to interactively create state nodes and transition links, edit them, and pan through the workspace.

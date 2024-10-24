@@ -5,6 +5,14 @@
 ## Overview
 This project is a JavaFX visual editor for building state-machine diagrams. It demonstrates concepts such as 2D graphics, immediate-mode interaction, the Model-View-Controller (MVC) architecture, multiple synchronized views, and view panning. The editor allows users to interactively create state nodes and transition links, edit them, and pan through the workspace.
 
+A visual editor in Java, JavaFX that demonstrates immediate-mode graphics, interaction with graphics, more complex Model-View-Controller (MVC) architectures, and multiple synchronized views. The
+system is an interactive editor for building state-machine diagrams. 
+
+The editor allows users to select a tool from a tool palette. Different tools allow the user to create state nodes, connect
+states with transition links, move and edit items in the workspace, and pan the view. A property panel at the right of the
+screen allows the user to edit details for a state node or a transition link. Pressing the Delete key deletes the selected
+item (if there is one) and any dependent items.
+
 ### Features
 - **Part 1:** Basic system with state node creation and linking
 - **Part 2:** Full transition links with event, context, and side effect representation

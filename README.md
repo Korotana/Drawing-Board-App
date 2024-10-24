@@ -1,4 +1,4 @@
-# Graphics
+# Drawing Board
 
 This is an application which allows the creation/deletion of Rectangular objects. 
 Event manipuation is demonstrated using Mouse and Keyboard. 
